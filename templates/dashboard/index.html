@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <h1 class="mb-4">Tableau de bord</h1>
+
+  <div class="row g-3 mb-3">
+    <div class="col-sm-6 col-lg-3">
+      <div class="card text-bg-primary">
+        <div class="card-body">
+          <div class="small">Documents</div>
+          <div class="fs-2 fw-bold">{{ stats.total_documents }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="card text-bg-secondary">
+        <div class="card-body">
+          <div class="small">Utilisateurs</div>
+          <div class="fs-2 fw-bold">{{ stats.total_users }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="card text-bg-info">
+        <div class="card-body">
+          <div class="small">Événements d'audit</div>
+          <div class="fs-2 fw-bold">{{ stats.total_audit_events }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="card {% if stats.failed_logins_24h > 0 %}text-bg-danger{% else %}text-bg-success{% endif %}">
+        <div class="card-body">
+          <div class="small">Échecs de connexion (24h)</div>
+          <div class="fs-2 fw-bold">{{ stats.failed_logins_24h }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card border-primary">
+        <div class="card-body text-center">
+          <div class="text-muted small">Factures</div>
+          <div class="fs-3 fw-bold">{{ stats.docs_invoice }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-success">
+        <div class="card-body text-center">
+          <div class="text-muted small">Pièces d'identité</div>
+          <div class="fs-3 fw-bold">{{ stats.docs_id }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-warning">
+        <div class="card-body text-center">
+          <div class="text-muted small">Contrats</div>
+          <div class="fs-3 fw-bold">{{ stats.docs_contract }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-secondary">
+        <div class="card-body text-center">
+          <div class="text-muted small">Autres</div>
+          <div class="fs-3 fw-bold">{{ stats.docs_other }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <strong>Événements récents</strong>
+      <a href="/admin/audit/auditlog/" class="btn btn-sm btn-outline-secondary">Voir tous</a>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Utilisateur</th>
+            <th>Action</th>
+            <th>Cible</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for event in recent_events %}
+          <tr>
+            <td><small>{{ event.timestamp|date:"d/m/Y H:i" }}</small></td>
+            <td>{{ event.user.username|default:"—" }}</td>
+            <td>
+              {% if event.action == "LOGIN_FAILED" %}
+                <span class="badge text-bg-danger">{{ event.get_action_display }}</span>
+              {% elif event.action == "DELETE" %}
+                <span class="badge text-bg-warning">{{ event.get_action_display }}</span>
+              {% else %}
+                <span class="badge text-bg-secondary">{{ event.get_action_display }}</span>
+              {% endif %}
+            </td>
+            <td><small>{{ event.target_repr|default:"—" }}</small></td>
+            <td><small class="text-muted">{{ event.ip_address|default:"—" }}</small></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="text-center text-muted py-3">Aucun événement.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><strong>Utilisateurs</strong></div>
+    <div class="table-responsive">
+      <table class="table table-sm mb-0">
+        <thead>
+          <tr>
+            <th>Nom d'utilisateur</th>
+            <th>Rôle</th>
+            <th>Documents</th>
+            <th>Dernière connexion</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td>{{ u.username }}</td>
+            <td>
+              {% if u.is_superuser %}
+                <span class="badge text-bg-dark">Superadmin</span>
+              {% elif u.is_staff %}
+                <span class="badge text-bg-primary">Admin</span>
+              {% else %}
+                <span class="badge text-bg-light text-dark">Employé</span>
+              {% endif %}
+            </td>
+            <td>{{ u.doc_count }}</td>
+            <td><small>{% if u.last_login %}{{ u.last_login|date:"d/m/Y H:i" }}{% else %}—{% endif %}</small></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

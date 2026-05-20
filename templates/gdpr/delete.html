@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Supprimer mon compte — SecureDocs{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 560px;">
+  <h1 class="mb-4 text-danger">Supprimer mon compte</h1>
+
+  <div class="alert alert-danger">
+    <strong>Attention.</strong> Cette action est <strong>définitive</strong>
+    et <strong>irréversible</strong>.
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Ce qui sera supprimé</h5>
+      <ul class="mb-0">
+        <li>Votre compte utilisateur ({{ user.username }})</li>
+        <li>Tous vos documents téléversés et leurs fichiers</li>
+        <li>Le texte extrait et les classifications associées</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Ce qui sera conservé</h5>
+      <p class="card-text mb-0 text-muted">
+        Le journal d'audit (RGPD art. 6.1.c — obligation légale) est conservé
+        de manière <strong>pseudonymisée</strong> : votre nom d'utilisateur en
+        sera retiré et remplacé par une référence vide.
+      </p>
+    </div>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="password" class="form-label">
+        Pour confirmer, saisissez votre mot de passe
+      </label>
+      <input
+        type="password"
+        name="password"
+        id="password"
+        class="form-control"
+        required
+        autocomplete="current-password"
+      >
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <a href="{% url 'gdpr:account' %}" class="btn btn-secondary">
+        Annuler
+      </a>
+      <button type="submit" class="btn btn-danger">
+        Supprimer définitivement mon compte
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

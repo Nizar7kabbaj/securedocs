@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Mes documents — SecureDocs{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Mes documents</h1>
+    <a href="{% url 'documents:upload' %}" class="btn btn-primary">
+      + Téléverser
+    </a>
+  </div>
+
+  {% if documents %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Nom du fichier</th>
+            <th>Classification</th>
+            <th>Téléversé le</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for doc in documents %}
+            <tr>
+              <td>{{ doc.original_name }}</td>
+              <td>
+                {% if doc.classification %}
+                  {% if doc.confidence >= 0.8 %}
+                    <span class="badge bg-success">{{ doc.classification }}</span>
+                  {% elif doc.confidence >= 0.5 %}
+                    <span class="badge bg-warning text-dark">{{ doc.classification }}</span>
+                  {% else %}
+                    <span class="badge bg-danger">{{ doc.classification }}</span>
+                  {% endif %}
+                  {% if doc.confidence %}
+                    <small class="text-muted ms-1">
+                      {% widthratio doc.confidence 1 100 %}%
+                    </small>
+                  {% endif %}
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+              <td>{{ doc.uploaded_at|date:"d/m/Y H:i" }}</td>
+              <td class="text-end">
+                <a href="{% url 'documents:detail' doc.id %}" class="btn btn-sm btn-outline-primary">Voir</a>
+                <a href="{% url 'documents:download' doc.id %}" class="btn btn-sm btn-outline-secondary">Télécharger</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info">
+      Vous n'avez encore aucun document.
+      <a href="{% url 'documents:upload' %}" class="alert-link">Téléversez votre premier document</a>.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

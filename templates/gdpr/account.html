@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Mon compte — SecureDocs{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 720px;">
+  <h1 class="mb-4">Mon compte</h1>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Informations</h5>
+      <dl class="row mb-0">
+        <dt class="col-sm-4">Nom d'utilisateur</dt>
+        <dd class="col-sm-8">{{ user.username }}</dd>
+
+        <dt class="col-sm-4">Email</dt>
+        <dd class="col-sm-8">{{ user.email|default:"—" }}</dd>
+
+        <dt class="col-sm-4">Inscrit le</dt>
+        <dd class="col-sm-8">{{ user.date_joined|date:"d/m/Y H:i" }}</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Mes données (RGPD)</h5>
+      <p class="card-text text-muted">
+        Conformément au Règlement Général sur la Protection des Données,
+        vous pouvez exporter ou supprimer l'ensemble de vos données.
+      </p>
+      <a href="{% url 'gdpr:export' %}" class="btn btn-primary">
+        Exporter mes données (ZIP)
+      </a>
+    </div>
+  </div>
+
+  <div class="card border-danger">
+    <div class="card-body">
+      <h5 class="card-title text-danger">Zone dangereuse</h5>
+      <p class="card-text text-muted">
+        La suppression de votre compte est <strong>définitive</strong>.
+        Tous vos documents seront effacés. Le journal d'audit est conservé
+        de manière pseudonymisée.
+      </p>
+      <a href="{% url 'gdpr:delete' %}" class="btn btn-outline-danger">
+        Supprimer mon compte
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

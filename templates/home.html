@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - SecureDocs{% endblock %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-white rounded-3 shadow-sm">
+    <div class="container-fluid py-4">
+        <h1 class="display-5 fw-bold">Bienvenue sur SecureDocs</h1>
+        <p class="col-md-8 fs-5">
+            Gérez vos documents en toute sécurité. Téléversez vos PDFs et images,
+            laissez l'IA les classer automatiquement, et gardez le contrôle complet
+            sur vos données.
+        </p>
+        {% if user.is_authenticated %}
+            <p class="fs-5">Connecté en tant que <strong>{{ user.username }}</strong>.</p>
+        {% else %}
+            <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg">Connexion</a>
+            <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary btn-lg">Inscription</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
